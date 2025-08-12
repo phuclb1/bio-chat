@@ -318,6 +318,32 @@ const staticOllamaModels: ModelConfig[] = [
     apiSdk: (apiKey?: string) =>
       openproviders("qwen2.5-coder:latest" as string, undefined, apiKey),
   },
+  {
+    id: "gemma3:4b",
+    name: "Gemma 3 4B",
+    provider: "Google",
+    providerId: "ollama",
+    modelFamily: "Gemma",
+    baseProviderId: "google",
+    description: "Lightweight Gemma 2B model for fast inference and translation tasks",
+    tags: ["local", "open-source", "fast", "2b", "translation"],
+    contextWindow: 8192,
+    inputCost: 0.0,
+    outputCost: 0.0,
+    priceUnit: "free (local)",
+    vision: false,
+    tools: true,
+    audio: false,
+    reasoning: true,
+    openSource: true,
+    speed: "Fast",
+    intelligence: "Medium",
+    website: "https://ollama.com",
+    apiDocs: "https://github.com/ollama/ollama/blob/main/docs/api.md",
+    modelPage: "https://ollama.com/library/gemma2",
+    apiSdk: (apiKey?: string) =>
+      openproviders("gemma2:2b" as string, undefined, apiKey),
+  },
 ]
 
 // Export function to get Ollama models

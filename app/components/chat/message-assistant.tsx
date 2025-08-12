@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import type { Message as MessageAISDK } from "@ai-sdk/react"
 import { ArrowClockwise, Check, Copy } from "@phosphor-icons/react"
 import { useCallback, useRef } from "react"
+import { useVietnameseTranslation } from "@/app/hooks/use-vietnamese-translation"
 import { getSources } from "./get-sources"
 import { QuoteButton } from "./quote-button"
 import { Reasoning } from "./reasoning"
@@ -83,6 +84,13 @@ export function MessageAssistant({
     }
   }, [selectionInfo, onQuote, clearSelection])
 
+  // Vietnamese translation hook
+  const isMessageComplete = status === "ready" || status === "submitted"
+  const { translation, isTranslating, error } = useVietnameseTranslation(
+    children, 
+    isMessageComplete && !contentNullOrEmpty
+  )
+
   return (
     <Message
       className={cn(
@@ -126,6 +134,38 @@ export function MessageAssistant({
           >
             {children}
           </MessageContent>
+        )}
+
+        {/* Vietnamese Translation Section */}
+        {isMessageComplete && !contentNullOrEmpty && (isTranslating || translation) && (
+          <div className="mt-4 border-t border-border pt-4">
+            {isTranslating ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Đang dịch sang tiếng Việt...
+              </div>
+            ) : translation ? (
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-foreground">
+                  **Bản dịch tiếng Việt:**
+                </div>
+                <MessageContent
+                  className={cn(
+                    "prose dark:prose-invert relative min-w-full bg-transparent p-0 text-sm",
+                    "prose-h1:scroll-m-20 prose-h1:text-xl prose-h1:font-semibold prose-h2:mt-6 prose-h2:scroll-m-20 prose-h2:text-lg prose-h2:mb-2 prose-h2:font-medium prose-h3:scroll-m-20 prose-h3:text-base prose-h3:font-medium prose-h4:scroll-m-20 prose-h5:scroll-m-20 prose-h6:scroll-m-20 prose-strong:font-medium prose-table:block prose-table:overflow-y-auto"
+                  )}
+                  markdown={true}
+                >
+                  {translation}
+                </MessageContent>
+              </div>
+            ) : null}
+            {error && (
+              <div className="text-sm text-red-500">
+                Lỗi dịch: {error}
+              </div>
+            )}
+          </div>
         )}
 
         {sources && sources.length > 0 && <SourcesList sources={sources} />}
