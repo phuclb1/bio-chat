@@ -26,7 +26,7 @@ export const FREE_MODELS_IDS = [
 
 export const MODEL_DEFAULT = "gpt-4.1-nano"
 
-export const APP_NAME = "Zola"
+export const APP_NAME = "Rainscales"
 export const APP_DOMAIN = "https://zola.chat"
 
 export const SUGGESTIONS = [
