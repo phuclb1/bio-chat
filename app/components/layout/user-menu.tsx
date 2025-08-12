@@ -72,7 +72,6 @@ export function UserMenu() {
         <SettingsTrigger onOpenChange={handleSettingsOpenChange} />
         <FeedbackTrigger />
         <AppInfoTrigger />
-        <DropdownMenuSeparator />
   
       </DropdownMenuContent>
     </DropdownMenu>
