@@ -13,9 +13,8 @@ export function OllamaSection() {
   const [enableOllama, setEnableOllama] = useState(true) // Default enabled in dev
   const [isLoading, setIsLoading] = useState(false)
 
-  // In client-side, we assume development mode (Ollama enabled) unless it's a production build
-  const isLocked =
-    typeof window !== "undefined" && window.location.hostname !== "localhost"
+  // Ollama is now enabled by default in all environments unless DISABLE_OLLAMA=true
+  const isLocked = false
 
   const testConnection = async () => {
     if (!ollamaEndpoint) return
@@ -50,11 +49,6 @@ export function OllamaSection() {
         <h3 className="mb-2 text-lg font-medium">Local Model Settings</h3>
         <p className="text-muted-foreground text-sm">
           Configure your local Ollama instance for running models locally.
-          {isLocked && (
-            <span className="mt-1 block text-orange-600 dark:text-orange-400">
-              Ollama is disabled in production mode.
-            </span>
-          )}
         </p>
       </div>
 
@@ -63,9 +57,8 @@ export function OllamaSection() {
           <CardTitle className="flex items-center justify-between">
             <span>Ollama</span>
             <Switch
-              checked={enableOllama && !isLocked}
+              checked={enableOllama}
               onCheckedChange={setEnableOllama}
-              disabled={isLocked}
             />
           </CardTitle>
         </CardHeader>
@@ -78,16 +71,14 @@ export function OllamaSection() {
               placeholder="http://localhost:11434"
               value={ollamaEndpoint}
               onChange={(e) => setOllamaEndpoint(e.target.value)}
-              disabled={!enableOllama || isLocked}
+              disabled={!enableOllama}
             />
             <p className="text-muted-foreground mt-1 text-xs">
-              {isLocked
-                ? "Endpoint is read-only in production mode."
-                : "Default Ollama endpoint. Make sure Ollama is running locally."}
+              Default Ollama endpoint. Make sure Ollama is running locally.
             </p>
           </div>
 
-          {enableOllama && !isLocked && (
+          {enableOllama && (
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -97,15 +88,6 @@ export function OllamaSection() {
               >
                 {isLoading ? "Testing..." : "Test Connection"}
               </Button>
-            </div>
-          )}
-
-          {isLocked && (
-            <div className="rounded-md bg-orange-50 p-3 dark:bg-orange-950/20">
-              <p className="text-sm text-orange-800 dark:text-orange-200">
-                Ollama is disabled in production deployments for performance and
-                security.
-              </p>
             </div>
           )}
         </CardContent>

@@ -35,12 +35,9 @@ const getOllamaBaseURL = (): string => {
   )
 }
 
-// Simple check: disabled in production or if DISABLE_OLLAMA=true
+// Simple check: disabled only if DISABLE_OLLAMA=true
 const shouldEnableOllama = (): boolean => {
-  return (
-    process.env.NODE_ENV !== "production" &&
-    process.env.DISABLE_OLLAMA !== "true"
-  )
+  return process.env.DISABLE_OLLAMA !== "true"
 }
 
 // Function to detect available Ollama models
