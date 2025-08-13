@@ -4,19 +4,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { signInWithGoogle, signInWithEmail } from "@/lib/api"
+import { signInWithGoogle, signUpWithEmail } from "@/lib/api"
 import { createClient } from "@/lib/supabase/client"
-import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import { HeaderGoBack } from "../components/header-go-back"
+import { HeaderGoBack } from "../../components/header-go-back"
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [isEmailLoading, setIsEmailLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   async function handleSignInWithGoogle() {
     const supabase = createClient()
@@ -46,7 +47,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleSignInWithEmail() {
+  async function handleSignUpWithEmail() {
     const supabase = createClient()
 
     if (!supabase) {
@@ -54,26 +55,44 @@ export default function LoginPage() {
       return
     }
 
-    if (!email || !password) {
-      setError("Please enter both email and password")
+    if (!email || !password || !confirmPassword) {
+      setError("Please fill in all fields")
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long")
       return
     }
 
     try {
       setIsEmailLoading(true)
       setError(null)
+      setSuccess(null)
 
-      const data = await signInWithEmail(supabase, email, password)
+      const data = await signUpWithEmail(supabase, email, password)
 
-      // Redirect to home on successful login
       if (data?.user) {
-        window.location.href = "/"
+        if (data.user.email_confirmed_at) {
+          // Email is already confirmed, redirect to home
+          window.location.href = "/"
+        } else {
+          // Email confirmation required
+          setSuccess(
+            `Please check your email (${email}) and click the confirmation link to complete your registration.`
+          )
+        }
       }
     } catch (err: unknown) {
-      console.error("Error signing in with email:", err)
+      console.error("Error signing up with email:", err)
       setError(
         (err as Error).message ||
-          "Invalid email or password. Please try again."
+          "An error occurred during sign up. Please try again."
       )
     } finally {
       setIsEmailLoading(false)
@@ -82,26 +101,34 @@ export default function LoginPage() {
 
   return (
     <div className="bg-background flex h-dvh w-full flex-col">
-      <HeaderGoBack href="/" />
+      <HeaderGoBack href="/auth/login" />
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h1 className="text-foreground text-3xl font-medium tracking-tight sm:text-4xl">
-              Welcome to Rainscale Healthcare
+              Create your account
             </h1>
             <p className="text-muted-foreground mt-3">
-              Sign in below to increase your message limits.
+              Sign up to get started with Rainscale Healthcare.
             </p>
           </div>
+          
           {error && (
             <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
               {error}
             </div>
           )}
+          
+          {success && (
+            <div className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 rounded-md p-3 text-sm">
+              {success}
+            </div>
+          )}
+          
           <div className="mt-8 space-y-6">
             {/* Email/Password Form */}
-            <form onSubmit={(e) => { e.preventDefault(); handleSignInWithEmail(); }} className="space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); handleSignUpWithEmail(); }} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -119,11 +146,25 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Create a password (min. 6 characters)"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isEmailLoading || isGoogleLoading}
                   required
+                  minLength={6}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isEmailLoading || isGoogleLoading}
+                  required
+                  minLength={6}
                 />
               </div>
               <Button
@@ -132,12 +173,12 @@ export default function LoginPage() {
                 size="lg"
                 disabled={isEmailLoading || isGoogleLoading}
               >
-                {isEmailLoading ? "Signing in..." : "Sign in"}
+                {isEmailLoading ? "Creating account..." : "Create account"}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link href="/auth/signup" className="text-foreground hover:underline font-medium">
-                  Sign up
+                Already have an account?{" "}
+                <Link href="/auth/login" className="text-foreground hover:underline font-medium">
+                  Sign in
                 </Link>
               </div>
             </form>
@@ -176,7 +217,6 @@ export default function LoginPage() {
       </main>
 
       <footer className="text-muted-foreground py-6 text-center text-sm">
-        {/* @todo */}
         <p>
           By continuing, you agree to our{" "}
           <Link href="/" className="text-foreground hover:underline">

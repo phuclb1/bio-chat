@@ -100,6 +100,56 @@ export async function updateChatModel(chatId: string, model: string) {
 }
 
 /**
+ * Signs in user with email and password via Supabase
+ */
+export async function signInWithEmail(
+  supabase: SupabaseClient,
+  email: string,
+  password: string
+) {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password,
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (err) {
+    console.error("Error signing in with email:", err)
+    throw err
+  }
+}
+
+/**
+ * Signs up user with email and password via Supabase
+ */
+export async function signUpWithEmail(
+  supabase: SupabaseClient,
+  email: string,
+  password: string
+) {
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password: password,
+    })
+
+    if (error) {
+      throw error
+    }
+
+    return data
+  } catch (err) {
+    console.error("Error signing up with email:", err)
+    throw err
+  }
+}
+
+/**
  * Signs in user with Google OAuth via Supabase
  */
 export async function signInWithGoogle(supabase: SupabaseClient) {
