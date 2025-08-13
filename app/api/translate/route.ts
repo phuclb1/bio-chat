@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Translation API error:", error)
     return new Response(
-      JSON.stringify({ error: "Translation failed", details: error.message }),
+      JSON.stringify({ error: "Translation failed", details: error }),
       { status: 500 }
     )
   }
