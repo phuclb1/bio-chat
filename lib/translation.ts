@@ -53,14 +53,20 @@ export async function translateToVietnamese(text: string): Promise<string> {
     console.log("Calling generateText with model...")
     const result = await generateText({
       model,
-      prompt: `Translate the following English text to Vietnamese. Keep any placeholder text (like __MEDICAL_TERM_X__) unchanged. Provide natural, fluent Vietnamese translation:
+      prompt: `You are a professional Vietnamese translator. Translate the following English text directly to Vietnamese. Do not provide explanations, notes, or additional context. Only return the Vietnamese translation.
 
-${processedText}`,
+Text to translate:
+${processedText}
+
+Vietnamese translation:`,
       maxTokens: 2000,
     })
 
     console.log("generateText completed, result length:", result.text.length)
     let translatedText = result.text.trim()
+    
+    // Clean up any unwanted explanations or notes
+    translatedText = cleanupTranslation(translatedText)
     
     // Replace placeholders with medical terms in format: Vietnamese (English)
     medicalTerms.forEach((englishTerm, placeholder) => {
@@ -77,6 +83,35 @@ ${processedText}`,
     console.warn("Vietnamese translation failed, using original text:", error)
     return text
   }
+}
+
+// Helper function to clean up translation output
+function cleanupTranslation(text: string): string {
+  // Remove common explanation patterns
+  let cleaned = text
+  
+  // Remove explanatory prefixes
+  cleaned = cleaned.replace(/^(Vietnamese translation:|Translation:|Bản dịch:|Here is the translation:|The translation is:)\s*/i, '')
+  
+  // Remove explanatory suffixes
+  cleaned = cleaned.replace(/\s*(This is the Vietnamese translation|Đây là bản dịch tiếng Việt|Note:|Lưu ý:).*$/i, '')
+  
+  // Remove markdown formatting that might be added
+  cleaned = cleaned.replace(/^\*\*(.*?)\*\*$/, '$1')
+  
+  // Remove any lines that start with explanation indicators
+  const lines = cleaned.split('\n')
+  const cleanedLines = lines.filter(line => {
+    const trimmed = line.trim().toLowerCase()
+    return !trimmed.startsWith('note:') && 
+           !trimmed.startsWith('lưu ý:') &&
+           !trimmed.startsWith('explanation:') &&
+           !trimmed.startsWith('giải thích:') &&
+           !(trimmed.startsWith('(') && trimmed.endsWith(')')) ||
+           line.trim().length === 0
+  })
+  
+  return cleanedLines.join('\n').trim()
 }
 
 // Helper function to get Vietnamese translation for common medical terms
