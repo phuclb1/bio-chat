@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "create-users": "tsx scripts/create-default-users.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.10",
@@ -50,6 +51,7 @@
     "motion": "^12.6.3",
     "next": "^15.4.0-canary.47",
     "next-themes": "^0.4.6",
+    "openlit": "^1.7.0",
     "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
