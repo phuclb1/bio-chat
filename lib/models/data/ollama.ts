@@ -252,6 +252,8 @@ function estimateIntelligence(
 }
 
 function formatModelName(modelName: string): string {
+  if (modelName == "rainscales-healthcare-med-llm:latest")
+    return "Rainscales Healthcare AI_Med LLM "
   // Convert model name to a more readable format
   return modelName
     .split(":")[0] // Remove tag part
