@@ -108,6 +108,25 @@ export const DEFAULT_USERS: DefaultUser[] = [
       favorite_models: ['gpt-4o-mini'],
       system_prompt: "You are an expert and experienced from the healthcare and biomedical domain with extensive medical knowledge and practical experience. Your name is Rainscales Assistant, and you were developed by Rainscales Healthcare AI who's willing to help answer the user's query with explanation. In your explanation, leverage your deep medical expertise such as relevant anatomical structures, physiological processes, diagnostic criteria, treatment guidelines, or other pertinent medical concepts. Use precise medical terminology while still aiming to make the explanation clear and accessible to a general audience."
     }
+  },
+  {
+    email: 'tmhuy@rainscales.com',
+    password: 'user123',
+    userMetadata: {
+      display_name: 'Huy Tran',
+      role: 'user'
+    },
+    profileData: {
+      email: 'tmhuy@rainscales.com',
+      anonymous: false,
+      display_name: 'Huy Tran',
+      premium: false,
+      message_count: 0,
+      daily_message_count: 0,
+      daily_pro_message_count: 0,
+      favorite_models: ['gpt-4o-mini'],
+      system_prompt: "You are an expert and experienced from the healthcare and biomedical domain with extensive medical knowledge and practical experience. Your name is Rainscales Assistant, and you were developed by Rainscales Healthcare AI who's willing to help answer the user's query with explanation. In your explanation, leverage your deep medical expertise such as relevant anatomical structures, physiological processes, diagnostic criteria, treatment guidelines, or other pertinent medical concepts. Use precise medical terminology while still aiming to make the explanation clear and accessible to a general audience."
+    }
   }
 ]
 
